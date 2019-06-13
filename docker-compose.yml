@@ -14,8 +14,9 @@ services:
       - "9300:9300"
     environment:
       ES_JAVA_OPTS: "-Xmx2048m -Xms2048m"
+      ELASTIC_PASSWORD: changeme
     networks:
-      - default
+      - elk
 
   logstash:
     build:
@@ -31,7 +32,7 @@ services:
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - default
+      - elk
     depends_on:
       - elasticsearch
 
@@ -41,15 +42,15 @@ services:
       args:
         ELK_VERSION: $ELK_VERSION
     volumes:
-      - ./kibana/config/:/usr/share/kibana/config:ro
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     ports:
       - "5601:5601"
     networks:
-      - default
+      - elk
     depends_on:
       - elasticsearch
 
 networks:
-  default:
-    external:
-        name: elk_bridge
+
+  elk:
+    driver: bridge
